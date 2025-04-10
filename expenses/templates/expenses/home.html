@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4">Danh sách giao dịch</h1>
+    {% if transactions %}
+        <ul class="list-group">
+            {% for transaction in transactions %}
+                <li class="list-group-item">{{ transaction.name }} - {{ transaction.amount }} VNĐ</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Không có giao dịch nào.</p>
+    {% endif %}
+</div>
+{% endblock %}

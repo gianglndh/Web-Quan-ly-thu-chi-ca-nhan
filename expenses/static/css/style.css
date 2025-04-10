@@ -1,0 +1,32 @@
+.btn-secondary {
+    display: none !important;
+}
+.small-card {
+    font-size: 14px;
+    padding: 8px;
+}
+
+.small-card .card-body {
+    padding: 10px;
+    text-align: center;
+}
+select[name="category"] option[value=""] {
+    display: none;
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 800px; /* Cho màn hình lớn hơn */
+    height: 400px; /* Giữ chiều cao cố định */
+    margin: auto; /* Căn giữa */
+}
+
+/* 🔹 Điều chỉnh trên điện thoại */
+@media (max-width: 576px) {
+    .chart-container {
+        max-width: 100%; /* Chiếm toàn bộ chiều rộng trên mobile */
+        height: 300px; /* Giảm chiều cao trên điện thoại */
+    }
+}
+
+
