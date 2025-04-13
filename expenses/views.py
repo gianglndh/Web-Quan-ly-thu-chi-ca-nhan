@@ -35,6 +35,7 @@ def register(request):
 logger = logging.getLogger(__name__)
 
 @login_required(login_url='login')
+@login_required(login_url='login')
 def transaction_list(request):
     print("🔎 DEBUG - Query Params:", request.GET)  # Kiểm tra request gửi lên
 
@@ -47,7 +48,6 @@ def transaction_list(request):
     # 🗓 Lọc theo ngày
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
-
     if start_date and end_date:
         transactions = transactions.filter(date__range=[start_date, end_date])
     elif start_date:
@@ -76,60 +76,64 @@ def transaction_list(request):
             Q(amount__icontains=search_query)
         )
 
-    # ✅ Tính tổng thu nhập, tổng chi tiêu và số dư
+    # ✅ Tính tổng thu nhập, tổng chi tiêu và số dư theo giao dịch đã lọc
     total_income = transactions.filter(type="income").aggregate(Sum("amount"))["amount__sum"] or 0
     total_expense = transactions.filter(type="expense").aggregate(Sum("amount"))["amount__sum"] or 0
     balance = total_income - total_expense
 
-    # 🔹 Xác định tháng đầu tiên & tháng hiện tại từ toàn bộ giao dịch
+    # ✅ Tính số dư tổng (không lọc)
+    income_total_all = all_transactions.filter(type="income").aggregate(Sum("amount"))["amount__sum"] or 0
+    expense_total_all = all_transactions.filter(type="expense").aggregate(Sum("amount"))["amount__sum"] or 0
+    current_balance = income_total_all - expense_total_all
+
+    # 🔹 Xác định tháng đầu tiên & hiện tại
     first_transaction = all_transactions.order_by("date").first()
     first_month = first_transaction.date.replace(day=1) if first_transaction else date.today().replace(day=1)
     current_month = date.today().replace(day=1)
 
-    # 🟢 Tạo danh sách tháng (từ tháng đầu tiên đến tháng hiện tại)
+    # 🟢 Tạo danh sách tháng
     month_labels = []
     temp_month = first_month
     while temp_month <= current_month:
         month_labels.append(temp_month.strftime("%m/%Y"))
-        temp_month += relativedelta(months=1)  # 🔥 Fix lỗi tính tháng
+        temp_month += relativedelta(months=1)
 
-    # 🔹 Lấy dữ liệu theo tháng (KHÔNG LỌC)
+    # 🔹 Dữ liệu tổng hợp theo tháng
     transactions_by_month = all_transactions.annotate(month=TruncMonth("date")) \
         .values("month", "type") \
         .annotate(total=Sum("amount"))
 
-    # 🎯 Chuẩn bị dữ liệu biểu đồ theo tháng
     monthly_income = {month: 0 for month in month_labels}
     monthly_expense = {month: 0 for month in month_labels}
 
     for item in transactions_by_month:
-        if item["month"]:  # ✅ Kiểm tra tránh lỗi NoneType
+        if item["month"]:
             month_label = item["month"].strftime("%m/%Y")
             if item["type"] == "income":
-                monthly_income[month_label] += float(item["total"])  # 🔥 Convert Decimal -> float
+                monthly_income[month_label] += float(item["total"])
             else:
-                monthly_expense[month_label] += float(item["total"])  # 🔥 Convert Decimal -> float
+                monthly_expense[month_label] += float(item["total"])
 
-    # 🔹 Phân trang (5 giao dịch mỗi trang)
+    # 🔹 Phân trang
     paginator = Paginator(transactions, 5)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    # 🔹 Lấy danh sách danh mục
+    # 🔹 Danh mục
     categories = Category.objects.filter(user=request.user)
-
-    
 
     return render(request, "expenses/transaction_list.html", {
         "transactions": page_obj,
         "total_income": total_income,
         "total_expense": total_expense,
         "balance": balance,
+        "current_balance": current_balance,  # ✅ Thêm dòng này để hiển thị số dư thực tế
         "categories": categories,
-        "monthly_labels": json.dumps(list(monthly_income.keys())),  # ✅ Convert JSON cho JS
-        "monthly_income": json.dumps(list(monthly_income.values())),  # ✅ Convert JSON cho JS
-        "monthly_expense": json.dumps(list(monthly_expense.values()))  # ✅ Convert JSON cho JS
+        "monthly_labels": json.dumps(list(monthly_income.keys())),
+        "monthly_income": json.dumps(list(monthly_income.values())),
+        "monthly_expense": json.dumps(list(monthly_expense.values())),
     })
+
 
 # 📌 Thêm giao dịch
 @login_required

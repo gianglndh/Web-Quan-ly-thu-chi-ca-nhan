@@ -1,5 +1,6 @@
 
 {% extends "expenses/base.html" %}
+
 {% load humanize %}
 
 {% block title %}Danh sách Giao dịch{% endblock %}
@@ -55,6 +56,18 @@
 <div class="text-center mb-4">
     <a href="{% url 'transaction_create' %}" class="btn btn-success">+ Thêm Giao Dịch</a>
 </div>
+
+<!-- 💰 Hiển thị số dư hiện tại -->
+<div class="alert alert-info text-center fw-bold fs-5">
+    💰 Số dư hiện tại:
+    {% if current_balance < 0 %}
+    <span class="text-danger">{{ current_balance|floatformat:0|intcomma }} VNĐ</span>
+    {% else %}
+    <span class="text-success">{{ current_balance|floatformat:0|intcomma }} VNĐ</span>
+    {% endif %}
+
+</div>
+
 
 <!-- 🔹 Hiển thị thông báo -->
 {% if messages %}
@@ -207,5 +220,11 @@
             }
         });
     });
+const monthlyLabels = JSON.parse('{{ monthly_labels|safe }}');
+const monthlyIncome = JSON.parse('{{ monthly_income|safe }}');
+const monthlyExpense = JSON.parse('{{ monthly_expense|safe }}');
+
+    
 </script>
+
 {% endblock %}
