@@ -1,13 +1,26 @@
 {% extends "expenses/base.html" %}
+{% block title %}Đăng ký{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>Đăng ký tài khoản</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Đăng ký</button>
-    </form>
-    <p>Đã có tài khoản? <a href="{% url 'login' %}">Đăng nhập</a></p>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+    <div class="card shadow p-4" style="width: 400px;">
+        <h3 class="text-center text-primary mb-4">Đăng ký tài khoản</h3>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="text-danger small">{{ field.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success w-100">Đăng ký</button>
+        </form>
+        <div class="text-center mt-3">
+            <small>Đã có tài khoản? <a href="{% url 'login' %}">Đăng nhập</a></small>
+        </div>
+    </div>
 </div>
 {% endblock %}

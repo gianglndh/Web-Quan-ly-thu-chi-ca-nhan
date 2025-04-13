@@ -13,7 +13,12 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         
         <div class="container">
+        {% if request.resolver_match.url_name == 'transaction_list' or request.resolver_match.url_name == 'home' %}
             <a class="navbar-brand" href="{% url 'home' %}">Trang chủ</a>
+        {% else %}
+            <a class="navbar-brand" href="#"> </a>  {# giữ layout không bị lệch #}
+        {% endif %}
+        
     
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
