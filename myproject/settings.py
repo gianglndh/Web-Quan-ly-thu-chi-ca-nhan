@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+import pymysql
+pymysql.install_as_MySQLdb()
 
 from pathlib import Path
 
@@ -76,9 +78,13 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+     'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'quanlythuchicanhan',       # Tên database bạn đã tạo trong MySQL
+        'USER': 'gianglndh',             # Tên user trong MySQL
+        'PASSWORD': '123456',   # Mật khẩu MySQL
+        'HOST': '192.168.1.17',     # IP của máy database server
+        'PORT': '3306',
     }
 }
 
