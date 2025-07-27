@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-m8m82c(1rjgakmy@w^=^+cb8kzxc5b@a41z2feap9078mh$cq^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -83,7 +83,7 @@ DATABASES = {
         'NAME': 'quanlythuchicanhan',       # Tên database bạn đã tạo trong MySQL
         'USER': 'gianglndh',             # Tên user trong MySQL
         'PASSWORD': '123456',   # Mật khẩu MySQL
-        'HOST': '192.168.1.17',     # IP của máy database server
+        'HOST': '192.168.1.8',     # IP của máy database server
         'PORT': '3306',
     }
 }
